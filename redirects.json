@@ -1,0 +1,12 @@
+{
+  "redirects": [
+    {
+      "old": "old.example.com",
+      "subdomain": "test"
+    },
+    {
+      "old": "custom.local",
+      "subdomain": "test2"
+    }
+  ]
+}
