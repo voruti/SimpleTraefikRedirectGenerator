@@ -1,6 +1,7 @@
 services:
   redirectgenerator:
     build: .
+    user: 1000:1000
     volumes:
       - ..:/workdir # the script expects a redirects.json file in this directory and writes a docker-compose.override.yml file to it
     environment:
