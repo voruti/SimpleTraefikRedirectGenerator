@@ -1,4 +1,4 @@
-FROM node:20.19.2@sha256:7c4cd7c6935554b79c6fffb88e7bde3db0ce25b45d4c634d1fb0f1a6e7f5b782
+FROM node:22.21.1@sha256:dcf06103a9d4087e3244a51697adbbb85331dcb7161dbe994ca1cd07dd32e2a5
 
 WORKDIR /workdir
 
