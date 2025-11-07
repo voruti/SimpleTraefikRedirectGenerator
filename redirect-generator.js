@@ -16,7 +16,7 @@ function getRouterName(old) {
   return `redirect-${old.replace(/\./g, '-')}`;
 }
 
-// generate the docker-compose.override.yml file content:
+// generate the compose.override.yml file content:
 let content = `services:\n\n  ${process.env.TRAEFIK_SERVICE_NAME || "traefik"}:\n    labels:\n      # redirects:`;
 for (const entry of redirects) {
   const routerName = getRouterName(entry.old);
@@ -29,7 +29,7 @@ for (const entry of redirects) {
   content += `\n      traefik.http.middlewares.${routerName}.redirectregex.permanent: "true"\n`
 }
 
-// write the docker-compose.override.yml file
-fs.writeFileSync('docker-compose.override.yml', content);
+// write the compose.override.yml file
+fs.writeFileSync('compose.override.yml', content);
 
 console.log("Done");

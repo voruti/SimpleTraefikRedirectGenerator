@@ -1,9 +1,0 @@
-services:
-  redirectgenerator:
-    build: .
-    user: 1000:1000
-    volumes:
-      - ..:/workdir # the script expects a redirects.json file in this directory and writes a docker-compose.override.yml file to it
-    environment:
-      HOST_TO_REDIRECT_TO: "example.com"
-      # TRAEFIK_SERVICE_NAME: "traefik" # optional, name of the Traefik service in docker-compose.yml; defaults to "traefik"
