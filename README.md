@@ -16,4 +16,7 @@ Clone the repository into your Traefik configuration directory and copy the `red
 - redirects.json  # copied from the repo: your mappings
 ```
 
-Execute with `docker compose up` inside the repository directory.
+Inside the repository directory:
+
+- Copy `template.env` to `.env` and adjust values as desired.
+- Execute with `docker compose up`.

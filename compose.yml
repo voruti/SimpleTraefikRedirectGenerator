@@ -1,9 +1,15 @@
 services:
   redirectgenerator:
     build: .
-    user: 1000:1000
+    user: ${PUID:-0}:${PGID:-0}
+
     volumes:
-      - ..:/workdir # the script expects a redirects.json file in this directory and writes a compose.override.yml file to it
+      - type: bind
+        source: "${WORKING_DIR:?}"
+        target: /workdir
+        read_only: false
+        bind: {}
+
     environment:
-      HOST_TO_REDIRECT_TO: "example.com"
-      # TRAEFIK_SERVICE_NAME: "traefik" # optional, name of the Traefik service in compose.yml; defaults to "traefik"
+      HOST_TO_REDIRECT_TO: "${HOST_TO_REDIRECT_TO:?}"
+      TRAEFIK_SERVICE_NAME: "${TRAEFIK_SERVICE_NAME:-traefik}"
