@@ -17,7 +17,7 @@ function getRouterName(old) {
 }
 
 // generate the compose.override.yml file content:
-let content = `services:\n\n  ${
+let content = `services:\n  ${
   process.env.TRAEFIK_SERVICE_NAME || "traefik"
 }:\n    labels:\n      # redirects:`;
 for (const entry of redirects) {
