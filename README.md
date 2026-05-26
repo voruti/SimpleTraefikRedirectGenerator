@@ -9,6 +9,7 @@ Creates a `compose.override.yml` file with labels that configure the redirects u
 
 Clone the repository into your Traefik configuration directory and copy the `redirects.json` example file out of the repo, like so:
 
+<!-- prettier-ignore -->
 ```yml
 - repo/...        # the clone of this repository
 - ...             # other files like acme.json, traefik.yml, etc. of your Traefik configuration

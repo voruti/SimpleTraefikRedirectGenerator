@@ -28,7 +28,7 @@ for (const entry of redirects) {
   content += `\n      traefik.http.routers.${routerName}.service: "noop@internal"`;
   content += `\n      traefik.http.middlewares.${routerName}.redirectregex.regex: "^\\\\S*?${entry.old.replaceAll(
     ".",
-    String.raw`\\.`
+    String.raw`\\.`,
   )}(\\\\S*)$$"`;
   content += `\n      traefik.http.middlewares.${routerName}.redirectregex.replacement: "https://${entry.subdomain}.${process.env.HOST_TO_REDIRECT_TO}$\${1}"`;
   content += `\n      traefik.http.middlewares.${routerName}.redirectregex.permanent: "true"\n`;
