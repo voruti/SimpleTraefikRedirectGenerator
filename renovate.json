@@ -8,5 +8,9 @@
     ":separateMultipleMajorReleases"
   ],
 
-  "osvVulnerabilityAlerts": true
+  "osvVulnerabilityAlerts": true,
+
+  "nix": {
+    "enabled": true
+  }
 }
