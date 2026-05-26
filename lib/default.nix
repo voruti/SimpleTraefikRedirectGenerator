@@ -8,17 +8,21 @@ let
   redirect =
     lib.types.submodule {
       options = {
-        old = lib.types.strMatching "^[a-z0-9.-]+$";
-        subdomain = lib.types.strMatching "^[a-z0-9-]+$";
-      };
-      example = {
-        old = "old.example.com";
-        subdomain = "test";
+        old = lib.options.mkOption {
+          type = lib.types.strMatching "^[a-z0-9.-]+$";
+          description = "A host/domain/FQDN to redirect away from.";
+          example = "old.example.com";
+        };
+        subdomain = lib.options.mkOption {
+          type = lib.types.strMatching "^[a-z0-9-]+$";
+          description = "The host part/subdomain/third-level domain name to redirect to.";
+          example = "test";
+        };
       };
     }
     // {
       name = "redirect";
-      description = "A redirection rule that adds a redirect from an 'old' domain to a 'subdomain' of a specified domain.";
+      description = "A redirection rule that adds a redirect from an 'old' domain to a 'subdomain'.";
       descriptionClass = "noun";
     };
 
