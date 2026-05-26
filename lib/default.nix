@@ -1,6 +1,26 @@
-_:
+{
+  inputs,
+  lib ? inputs.nixpkgs.lib,
+}:
 
 let
+  redirect =
+    lib.types.submodule {
+      options = {
+        old = lib.types.strMatching "^[a-z0-9.-]+$";
+        subdomain = lib.types.strMatching "^[a-z0-9-]+$";
+      };
+      example = {
+        old = "old.example.com";
+        subdomain = "test";
+      };
+    }
+    // {
+      name = "redirect";
+      description = "A redirection rule that adds a redirect from an 'old' domain to a 'subdomain' of a specified domain.";
+      descriptionClass = "noun";
+    };
+
   createLabels =
     { hostToRedirectTo, redirects }:
     builtins.listToAttrs (
@@ -40,5 +60,6 @@ let
 in
 
 {
+  types = { inherit redirect; };
   inherit createLabels;
 }
