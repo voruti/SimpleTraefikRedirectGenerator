@@ -1,6 +1,7 @@
 {
   inputs,
   lib ? inputs.nixpkgs.lib,
+  ...
 }:
 
 let
