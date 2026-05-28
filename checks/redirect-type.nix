@@ -40,6 +40,38 @@ let
     old = "foo";
     subdomain = "bar";
   };
+
+  assertInvalid =
+    value:
+    if
+      (builtins.tryEval (
+        (typeToTest.merge
+          [ ]
+          [
+            {
+              file = "";
+              inherit value;
+            }
+          ]
+        ) == value
+      )).success == false
+    then
+      ""
+    else
+      builtins.throw "Test failure";
+
+  subdomainWithDot = {
+    old = "old.example.com";
+    subdomain = "test.local";
+  };
+  uppercaseOld = {
+    old = "OLD.example.com";
+    subdomain = "test";
+  };
+  uppercaseSubdomain = {
+    old = "old.example.com";
+    subdomain = "TEST";
+  };
 in
 
 (pkgs.runCommand pname { } ''
@@ -47,5 +79,10 @@ in
   ${assertValid withSeparators}
   ${assertValid withNumbers}
   ${assertValid hostAsOld}
+
+  ${assertInvalid subdomainWithDot}
+  ${assertInvalid uppercaseOld}
+  ${assertInvalid uppercaseSubdomain}
+
   touch $out
 '')
