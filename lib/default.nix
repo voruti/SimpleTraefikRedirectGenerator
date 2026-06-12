@@ -25,6 +25,7 @@ let
       description = "A redirection rule that adds a redirect from an 'old' domain to a 'subdomain'.";
       descriptionClass = "noun";
     };
+  redirects = lib.types.listOf redirect;
 
   createLabels =
     { hostToRedirectTo, redirects }:
@@ -65,6 +66,6 @@ let
 in
 
 {
-  types = { inherit redirect; };
+  types = { inherit redirects; };
   inherit createLabels;
 }
