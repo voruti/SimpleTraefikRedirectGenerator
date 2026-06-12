@@ -8,16 +8,10 @@
 let
   input = {
     hostToRedirectTo = "foo.example";
-    redirects = [
-      {
-        old = "old.example.com";
-        subdomain = "test";
-      }
-      {
-        old = "custom.local";
-        subdomain = "test2";
-      }
-    ];
+    redirects = {
+      "old.example.com" = "test";
+      "custom.local" = "test2";
+    };
   };
 
   expectedOutput = {

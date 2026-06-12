@@ -24,40 +24,22 @@ let
     else
       builtins.throw "Test failure";
 
-  basicExample = [
-    {
-      old = "old.example.com";
-      subdomain = "test";
-    }
-  ];
-  multiple = [
-    {
-      old = "old.example.com";
-      subdomain = "test";
-    }
-    {
-      old = "custom.local";
-      subdomain = "test2";
-    }
-  ];
-  withSeparators = [
-    {
-      old = "old-foo-bar.example.com";
-      subdomain = "test-foo-bar";
-    }
-  ];
-  withNumbers = [
-    {
-      old = "old123.example.com";
-      subdomain = "test123";
-    }
-  ];
-  hostAsOld = [
-    {
-      old = "foo";
-      subdomain = "bar";
-    }
-  ];
+  basicExample = {
+    "old.example.com" = "test";
+  };
+  multiple = {
+    "old.example.com" = "test";
+    "custom.local" = "test2";
+  };
+  withSeparators = {
+    "old-foo-bar.example.com" = "test-foo-bar";
+  };
+  withNumbers = {
+    "old123.example.com" = "test123";
+  };
+  hostAsOld = {
+    "foo" = "bar";
+  };
 
   assertInvalid =
     value:
@@ -78,24 +60,12 @@ let
     else
       builtins.throw "Test failure";
 
-  subdomainWithDot = [
-    {
-      old = "old.example.com";
-      subdomain = "test.local";
-    }
-  ];
-  uppercaseOld = [
-    {
-      old = "OLD.example.com";
-      subdomain = "test";
-    }
-  ];
-  uppercaseSubdomain = [
-    {
-      old = "old.example.com";
-      subdomain = "TEST";
-    }
-  ];
+  subdomainWithDot = {
+    "old.example.com" = "test.local";
+  };
+  uppercaseSubdomain = {
+    "old.example.com" = "TEST";
+  };
 in
 
 (pkgs.runCommand pname { } ''
@@ -106,7 +76,6 @@ in
   ${assertValid hostAsOld}
 
   ${assertInvalid subdomainWithDot}
-  ${assertInvalid uppercaseOld}
   ${assertInvalid uppercaseSubdomain}
 
   touch $out

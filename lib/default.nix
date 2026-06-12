@@ -5,63 +5,49 @@
 }:
 
 let
-  redirect =
-    lib.types.submodule {
-      options = {
-        old = lib.options.mkOption {
-          type = lib.types.strMatching "^[a-z0-9.-]+$";
-          description = "A host/domain/FQDN to redirect away from.";
-          example = "old.example.com";
-        };
-        subdomain = lib.options.mkOption {
-          type = lib.types.strMatching "^[a-z0-9-]+$";
-          description = "The host part/subdomain/third-level domain name to redirect to.";
-          example = "test";
-        };
-      };
-    }
-    // {
-      name = "redirect";
-      description = "A redirection rule that adds a redirect from an 'old' domain to a 'subdomain'.";
-      descriptionClass = "noun";
-    };
-  redirects = lib.types.listOf redirect;
+  redirects = (lib.types.attrsOf (lib.types.strMatching "^[a-z0-9-]+$")) // {
+    name = "redirects";
+    description = "Redirection rules that add redirects from hosts/domains/FQDNs to a host part/subdomain/third-level domain name, each.";
+    descriptionClass = "composite";
+  };
 
   createLabels =
     { hostToRedirectTo, redirects }:
     builtins.listToAttrs (
-      builtins.concatMap (
-        entry:
-        let
-          routerName = "redirect-${builtins.replaceStrings [ "." ] [ "-" ] entry.old}";
-        in
-        [
-          {
-            name = "traefik.http.routers.${routerName}.rule";
-            value = "Host(`${entry.old}`)";
-          }
-          {
-            name = "traefik.http.routers.${routerName}.middlewares";
-            value = routerName;
-          }
-          {
-            name = "traefik.http.routers.${routerName}.service";
-            value = "noop@internal";
-          }
-          {
-            name = "traefik.http.middlewares.${routerName}.redirectregex.regex";
-            value = "^\\S*?${builtins.replaceStrings [ "." ] [ "\\." ] entry.old}(\\S*)$$";
-          }
-          {
-            name = "traefik.http.middlewares.${routerName}.redirectregex.replacement";
-            value = "https://${entry.subdomain}.${hostToRedirectTo}$\${1}";
-          }
-          {
-            name = "traefik.http.middlewares.${routerName}.redirectregex.permanent";
-            value = true;
-          }
-        ]
-      ) redirects
+      lib.lists.flatten (
+        lib.attrsets.mapAttrsToList (
+          old: subdomain:
+          let
+            routerName = "redirect-${builtins.replaceStrings [ "." ] [ "-" ] old}";
+          in
+          [
+            {
+              name = "traefik.http.routers.${routerName}.rule";
+              value = "Host(`${old}`)";
+            }
+            {
+              name = "traefik.http.routers.${routerName}.middlewares";
+              value = routerName;
+            }
+            {
+              name = "traefik.http.routers.${routerName}.service";
+              value = "noop@internal";
+            }
+            {
+              name = "traefik.http.middlewares.${routerName}.redirectregex.regex";
+              value = "^\\S*?${builtins.replaceStrings [ "." ] [ "\\." ] old}(\\S*)$$";
+            }
+            {
+              name = "traefik.http.middlewares.${routerName}.redirectregex.replacement";
+              value = "https://${subdomain}.${hostToRedirectTo}$\${1}";
+            }
+            {
+              name = "traefik.http.middlewares.${routerName}.redirectregex.permanent";
+              value = true;
+            }
+          ]
+        ) redirects
+      )
     );
 in
 
