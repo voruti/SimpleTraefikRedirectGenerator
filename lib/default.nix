@@ -11,47 +11,36 @@ let
     descriptionClass = "composite";
   };
 
-  createLabels =
+  createConfig =
     { hostToRedirectTo, redirects }:
-    builtins.listToAttrs (
-      lib.lists.flatten (
-        lib.attrsets.mapAttrsToList (
-          old: subdomain:
-          let
-            routerName = "redirect-${builtins.replaceStrings [ "." ] [ "-" ] old}";
-          in
-          [
-            {
-              name = "traefik.http.routers.${routerName}.rule";
-              value = "Host(`${old}`)";
-            }
-            {
-              name = "traefik.http.routers.${routerName}.middlewares";
-              value = routerName;
-            }
-            {
-              name = "traefik.http.routers.${routerName}.service";
-              value = "noop@internal";
-            }
-            {
-              name = "traefik.http.middlewares.${routerName}.redirectregex.regex";
-              value = "^\\S*?${builtins.replaceStrings [ "." ] [ "\\." ] old}(\\S*)$$";
-            }
-            {
-              name = "traefik.http.middlewares.${routerName}.redirectregex.replacement";
-              value = "https://${subdomain}.${hostToRedirectTo}$\${1}";
-            }
-            {
-              name = "traefik.http.middlewares.${routerName}.redirectregex.permanent";
-              value = true;
-            }
-          ]
-        ) redirects
-      )
-    );
+    let
+      routerName = old: "redirect-${builtins.replaceStrings [ "." ] [ "-" ] old}";
+    in
+    {
+      http = {
+        routers = lib.attrsets.mapAttrs' (old: _subdomain: {
+          name = routerName old;
+          value = {
+            rule = "Host(`${old}`)";
+            middlewares = [ (routerName old) ];
+            service = "noop@internal";
+          };
+        }) redirects;
+        middlewares = lib.attrsets.mapAttrs' (old: subdomain: {
+          name = routerName old;
+          value = {
+            redirectRegex = {
+              regex = "^\\S*?${builtins.replaceStrings [ "." ] [ "\\." ] old}(\\S*)$";
+              replacement = "https://${subdomain}.${hostToRedirectTo}\${1}";
+              permanent = true;
+            };
+          };
+        }) redirects;
+      };
+    };
 in
 
 {
   types = { inherit redirects; };
-  inherit createLabels;
+  inherit createConfig;
 }

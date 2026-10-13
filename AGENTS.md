@@ -10,14 +10,14 @@ This is a living document - a small part of every task. At the end of a task, re
 - **Don't add** one-off task details, anything readable off a single file in one `Read`, speculation, or duplicates.
 - Keep entries to 1-2 lines, factual, matching this style; prefer updating an existing bullet over a new section.
 
-## Two parallel implementations — keep in sync
+## Two parallel implementations
 
 - `redirect-generator.js` — the runtime implementation, executed via Docker (`redirect-generator.js:38`).
-- `lib/default.nix` (`createLabels`, `types.redirects`) — Nix port used only by the flake checks.
+- `lib/default.nix` (`createConfig`, `types.redirects`) — Nix port used only by the flake checks.
 
-Any change to label naming, regex, or replacement logic must be applied to **both**; only the Nix side has tests (`checks/createLabels.nix`, `checks/redirect-type.nix`).
+Any change to router/middleware naming, regex, or replacement logic must be applied to **both**; only the Nix side has tests (`checks/createConfig.nix`, `checks/redirect-type.nix`).
 
-They consume the mapping in **different shapes**, though the semantics match: JS reads `redirects.json` as an array of `{ old, subdomain }`, while Nix `createLabels` and the checks use an attrset `{ old = subdomain; }`.
+They diverge in **output shape and `$` escaping**: JS emits flat docker-compose `traefik.http.*` labels and doubles the regex/replacement `$` (`$$`) for compose parsing; Nix `createConfig` returns a nested Traefik dynamic-config attrset (`http.routers.<name>`, `http.middlewares.<name>.redirectRegex`) with a single `$`. Both consume the mapping differently: JS reads `redirects.json` as an array of `{ old, subdomain }`, while Nix uses an attrset `{ old = subdomain; }`.
 
 ## Verification
 
@@ -33,8 +33,8 @@ They consume the mapping in **different shapes**, though the semantics match: JS
 
 `flake.nix` uses Blueprint to generate flake outputs from the folder structure. Per-system files take `{ inputs, flake, system, perSystem, pkgs }` plus `pname` for packages/checks. Use `inputs.nixpkgs.lib`, not a bare `lib`.
 
-- `lib/default.nix` → `lib` (exposes `createLabels` and `types.redirects`).
-- `checks/<name>.nix` → `checks.<system>.<name>` (bare name, no `pkgs-` prefix): `createLabels`, `redirect-type`.
+- `lib/default.nix` → `lib` (exposes `createConfig` and `types.redirects`).
+- `checks/<name>.nix` → `checks.<system>.<name>` (bare name, no `pkgs-` prefix): `createConfig`, `redirect-type`.
 - top-level `formatter.nix` → package `packages.<system>.formatter` + auto check `checks.<system>.pkgs-formatter`.
 - `devshell.nix` → `devShells.<system>.default` + auto check `checks.<system>.devshell-default`.
 
