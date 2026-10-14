@@ -16,7 +16,7 @@ let
     let
       routerName = old: "redirect-${builtins.replaceStrings [ "." ] [ "-" ] old}";
     in
-    {
+    lib.attrsets.optionalAttrs (redirects != { }) {
       http = {
         routers = lib.attrsets.mapAttrs' (old: _subdomain: {
           name = routerName old;
